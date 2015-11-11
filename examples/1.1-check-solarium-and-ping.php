@@ -19,7 +19,7 @@ try {
     echo '<br/><pre>';
     var_dump($result->getData());
     echo '</pre>';
-} catch (Solarium\Exception $e) {
+} catch (Solarium\Exception\HttpException $e) {
     echo 'Ping query failed';
 }
 
