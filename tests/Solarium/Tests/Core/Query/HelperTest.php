@@ -437,5 +437,11 @@ class HelperTest extends \PHPUnit_Framework_TestCase
             'my string',
             $this->helper->filterControlCharacters("my\x08string")
         );
+
+        $this->assertEquals(
+            array('my string', 'moi string'),
+            $this->helper->filterControlCharacters(
+                array("my\x08string", "moi\x08string"))
+        );
     }
 }

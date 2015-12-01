@@ -486,7 +486,18 @@ class Helper
      */
     public function filterControlCharacters($data)
     {
-        return preg_replace('@[\x00-\x08\x0B\x0C\x0E-\x1F]@', ' ', $data);
+        $controlRegex = '@[\x00-\x08\x0B\x0C\x0E-\x1F]@';
+        if (is_array($data)){
+            foreach ($data as &$d){
+                if(is_string($d)){
+                    $d = preg_replace($controlRegex, ' ', $d);
+                }
+            }
+        }
+        else if (is_string($data)){
+            $data =  preg_replace($controlRegex, ' ', $data);
+        }
+        return $data;
     }
 
     /**
