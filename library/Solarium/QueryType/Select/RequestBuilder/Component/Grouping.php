@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2011 Bas de Nooijer. All rights reserved.
+ * Copyright 2016 Bram Gerritsen. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -42,11 +42,13 @@ namespace Solarium\QueryType\Select\RequestBuilder\Component;
 
 use Solarium\QueryType\Select\Query\Component\Grouping as GroupingComponent;
 use Solarium\Core\Client\Request;
+use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Select\QueryBuilder\ComponentQueryBuilderInterface;
 
 /**
  * Add select component Grouping to the request.
  */
-class Grouping implements ComponentRequestBuilderInterface
+class Grouping implements ComponentRequestBuilderInterface, ComponentQueryBuilderInterface
 {
     /**
      * Add request settings for Grouping.
@@ -75,5 +77,16 @@ class Grouping implements ComponentRequestBuilderInterface
         $request->addParam('group.format', $component->getFormat());
 
         return $request;
+    }
+
+    public function buildQuery(Request $request, Query $query)
+    {
+        if ($request->getParam('group') !== 'true') {
+            return;
+        }
+
+        $component = new GroupingComponent();
+        $component->setFields($request->getParam('group.field'));
+        $query->setComponent('grouping', $component);
     }
 }
