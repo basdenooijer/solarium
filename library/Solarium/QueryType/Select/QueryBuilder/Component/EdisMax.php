@@ -82,6 +82,10 @@ class EdisMax extends AbstractQueryBuilder implements ComponentQueryBuilderInter
         $this->parseBoostQueries($edisMax, $request);
     }
 
+    /**
+     * @param EdisMaxComponent $edisMax
+     * @param Request $request
+     */
     protected function parseBoostQueries(EdisMaxComponent $edisMax, Request $request)
     {
         $boostQueries = $this->getParamAsArray($request, 'bq');
