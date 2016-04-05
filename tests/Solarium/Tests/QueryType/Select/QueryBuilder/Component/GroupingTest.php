@@ -33,7 +33,6 @@ namespace Solarium\Tests\QueryType\Select\QueryBuilder\Component;
 
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\QueryBuilder\Component\Grouping;
-use Solarium\QueryType\Select\RequestBuilder\Component\Grouping as RequestBuilder;
 use Solarium\QueryType\Select\Query\Component\Grouping as Component;
 use Solarium\Core\Client\Request;
 
@@ -69,6 +68,16 @@ class GroupingTest extends \PHPUnit_Framework_TestCase
         $component = $query->getComponent('grouping');
 
         $this->assertEquals(array('fieldA', 'fieldB'), $component->getFields());
-        $this->assertEquals(array('fieldA', 'fieldB'), $component->getFields());
+        $this->assertEquals(array('cat:1', 'cat:2'), $component->getQueries());
+        $this->assertEquals(12, $component->getLimit());
+        $this->assertEquals(2, $component->getOffset());
+        $this->assertEquals('score desc', $component->getSort());
+        $this->assertTrue($component->getMainResult());
+        $this->assertFalse($component->getNumberOfGroups());
+        $this->assertEquals(50, $component->getCachePercentage());
+        $this->assertTrue($component->getTruncate());
+        $this->assertEquals('log(foo)', $component->getFunction());
+        $this->assertTrue($component->getFacet());
+        $this->assertEquals('grouped', $component->getFormat());
     }
 }

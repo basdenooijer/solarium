@@ -60,5 +60,16 @@ class Grouping implements ComponentQueryBuilderInterface
 
         $component = $query->getGrouping();
         $component->setFields($request->getParam('group.field'));
+        $component->setQueries($request->getParam('group.query'));
+        $component->setLimit($request->getParam('group.limit'));
+        $component->setOffset($request->getParam('group.offset'));
+        $component->setSort($request->getParam('group.sort'));
+        $component->setMainResult($request->getParam('group.main') === 'true');
+        $component->setNumberOfGroups($request->getParam('group.ngroups') === 'true');
+        $component->setCachePercentage($request->getParam('group.cache.percent'));
+        $component->setTruncate($request->getParam('group.truncate') === 'true');
+        $component->setFunction($request->getParam('group.func'));
+        $component->setFacet($request->getParam('group.facet') === 'true');
+        $component->setFormat($request->getParam('group.format'));
     }
 }
