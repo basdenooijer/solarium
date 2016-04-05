@@ -33,11 +33,9 @@ namespace Solarium\Tests\QueryType\Select\QueryBuilder\Component;
 
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\QueryBuilder\Component\EdisMax as EdisMaxBuilder;
-use Solarium\QueryType\Select\QueryBuilder\Component\Grouping;
-use Solarium\QueryType\Select\Query\Component\Grouping as Component;
 use Solarium\Core\Client\Request;
 
-class GroupingTest extends \PHPUnit_Framework_TestCase
+class EdisMaxTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var Request
