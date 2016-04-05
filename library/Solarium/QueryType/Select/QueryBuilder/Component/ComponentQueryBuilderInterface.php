@@ -29,7 +29,7 @@
  * policies, either expressed or implied, of the copyright holder.
  */
 
-namespace Solarium\QueryType\Select\QueryBuilder;
+namespace Solarium\QueryType\Select\QueryBuilder\Component;
 
 use Solarium\Core\Client\Request;
 use Solarium\QueryType\Select\Query\Query;
@@ -37,6 +37,8 @@ use Solarium\QueryType\Select\Query\Query;
 interface ComponentQueryBuilderInterface
 {
     /**
+     * Builds a solarium query from a request
+     *
      * @param Query $query
      * @param Request $request
      * @return void

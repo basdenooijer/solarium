@@ -37,7 +37,6 @@
 namespace Solarium\Tests\QueryType\Select\QueryBuilder\Component;
 
 use Solarium\Core\Client\Request;
-use Solarium\QueryType\Select\Query\Component\Facet\Field;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\QueryBuilder\Component\FacetSet as FacetSetBuilder;
 

@@ -44,7 +44,6 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Query\AbstractQueryBuilder;
 use Solarium\QueryType\Select\Query\Component\FacetSet as FacetSetComponent;
 use Solarium\QueryType\Select\Query\Query;
-use Solarium\QueryType\Select\QueryBuilder\ComponentQueryBuilderInterface;
 
 /**
  * Add select component FacetSet to the request.
