@@ -142,6 +142,12 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('price' => Query::SORT_ASC), $this->query->getSorts());
     }
 
+    public function testQueryWithoutSort()
+    {
+        $this->queryBuilder->build($this->query, $this->request);
+        $this->assertEquals(array(), $this->query->getSorts());
+    }
+
     public function testQueryMultipleSortsWithWhitespace()
     {
         $this->request->addParam('sort', ' price ASC, rating DESC ');

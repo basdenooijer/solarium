@@ -87,7 +87,7 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
         $sort = $request->getParam('sort');
 
         $parts = explode(',', $sort);
-        $parts = array_map('trim', $parts);
+        $parts = array_filter(array_map('trim', $parts));
         foreach ($parts as $sort) {
             if (strtolower(substr($sort, -3)) == 'asc') {
                 $mode = Query::SORT_ASC;
