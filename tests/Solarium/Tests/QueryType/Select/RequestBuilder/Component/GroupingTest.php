@@ -104,7 +104,7 @@ class GroupingTest extends \PHPUnit_Framework_TestCase
         );
 
         $query = new Query();
-        $builder->buildQuery($request, $query);
+        $builder->buildQuery($query, $request);
 
         /** @var Component $component */
         $component = $query->getComponent('grouping');

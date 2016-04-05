@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2016 Bram Gerritsen. All rights reserved.
+ * Copyright 2016 Bas de Nooijer. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -27,19 +27,30 @@
  * The views and conclusions contained in the software and documentation are
  * those of the authors and should not be interpreted as representing official
  * policies, either expressed or implied, of the copyright holder.
+ *
+ * @copyright Copyright 2016 Bas de Nooijer <solarium@raspberry.nl>
+ * @license http://github.com/basdenooijer/solarium/raw/master/COPYING
+ *
+ * @link http://www.solarium-project.org/
  */
 
-namespace Solarium\QueryType\Select\QueryBuilder;
+/**
+ * @namespace
+ */
 
-use Solarium\Core\Client\Request;
-use Solarium\QueryType\Select\Query\Query;
+namespace Solarium\Core\Query;
 
-interface ComponentQueryBuilderInterface
+use Solarium\Core\ConfigurableInterface;
+
+/**
+ * ProvidesQueryBuilderInterface interface.
+ */
+interface ProvidesQueryBuilderInterface extends ConfigurableInterface
 {
     /**
-     * @param Query $query
-     * @param Request $request
-     * @return void
+     * Get a querybuilder instance for this query type.
+     *
+     * @return QueryBuilderInterface
      */
-    public function buildQuery(Query $query, Request $request);
+    public function getQueryBuilder();
 }

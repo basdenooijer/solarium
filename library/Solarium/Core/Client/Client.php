@@ -42,12 +42,14 @@ namespace Solarium\Core\Client;
 
 use Solarium\Core\Configurable;
 use Solarium\Core\Plugin\PluginInterface;
+use Solarium\Core\Query\ProvidesQueryBuilderInterface;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\Core\Query\Result\ResultInterface;
 use Solarium\Core\Client\Adapter\AdapterInterface;
 use Solarium\Core\Query\RequestBuilderInterface;
 use Solarium\Exception\InvalidArgumentException;
 use Solarium\Exception\OutOfBoundsException;
+use Solarium\Exception\RuntimeException;
 use Solarium\Exception\UnexpectedValueException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Solarium\Core\Event\Events;
@@ -1004,7 +1006,7 @@ class Client extends Configurable implements ClientInterface
      * @param string $type
      * @param array  $options
      *
-     * @return \Solarium\Core\Query\AbstractQuery
+     * @return QueryInterface
      */
     public function createQuery($type, $options = null)
     {
@@ -1031,6 +1033,25 @@ class Client extends Configurable implements ClientInterface
             Events::POST_CREATE_QUERY,
             new PostCreateQueryEvent($type, $options, $query)
         );
+
+        return $query;
+    }
+
+    /**
+     * @param string $type
+     * @param Request $request
+     *
+     * @return QueryInterface
+     */
+    public function createQueryFromRequest($type, Request $request)
+    {
+        $query = $this->createQuery($type);
+        if (!$query instanceof ProvidesQueryBuilderInterface) {
+            throw new RuntimeException(sprintf('Querytype %s doesn\'t support creating a query from a request', $type));
+        }
+
+        $builder = $query->getQueryBuilder();
+        $builder->build($query, $request);
 
         return $query;
     }

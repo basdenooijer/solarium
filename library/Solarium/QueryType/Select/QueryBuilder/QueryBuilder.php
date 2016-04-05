@@ -28,7 +28,7 @@
  * those of the authors and should not be interpreted as representing official
  * policies, either expressed or implied, of the copyright holder.
  *
- * @copyright Copyright 2011 Bas de Nooijer <solarium@raspberry.nl>
+ * @copyright Copyright 2016 Bas de Nooijer <solarium@raspberry.nl>
  * @license http://github.com/basdenooijer/solarium/raw/master/COPYING
  *
  * @link http://www.solarium-project.org/
@@ -42,38 +42,38 @@ namespace Solarium\QueryType\Select\QueryBuilder;
 
 use Solarium\Core\Query\AbstractQueryBuilder;
 use Solarium\Core\Client\Request;
+use Solarium\Core\Query\QueryBuilderInterface;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Select\RequestBuilder\Component\Grouping;
 
 /**
  * Build a select request.
  */
-class QueryBuilder extends AbstractQueryBuilder
+class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
 {
     /**
      * Build query object from a request.
      *
      * @param QueryInterface $query
+     * @param Request $request
      *
-     * @return Query
+     * @return void
      */
-    public function build(Request $request)
+    public function build(QueryInterface $query, Request $request)
     {
-        $query = new Query($this->parseLocalParams($request->getParam('q'), 'query'));
+        $query->setOptions($this->parseLocalParams($request->getParam('q'), 'query'));
 
-//        $query->setStart($request->getParam('start'));
-//        $query->setRows($request->getParam('rows'));
-//        $query->setFields($request->getParam('fl'));
-//        $query->setQueryDefaultOperator($request->getParam('q.op'));
-//        $query->setQueryDefaultField($request->getParam('df'));
-//
-//        $this->parseSortParam($query, $request);
-//
-//        $this->parseFilterQueries($query, $request);
-//
-//        $this->parseComponents($query, $request);
+        $query->setStart($request->getParam('start'));
+        $query->setRows($request->getParam('rows'));
 
-        return $query;
+        $query->setFields($this->getParamAsArray($request, 'fl'));
+        $query->setQueryDefaultOperator($request->getParam('q.op'));
+        $query->setQueryDefaultField($request->getParam('df'));
+
+        $this->parseSortParam($query, $request);
+        $this->parseFilterQueries($query, $request);
+        $this->parseComponents($query, $request);
     }
 
     /**
@@ -90,7 +90,7 @@ class QueryBuilder extends AbstractQueryBuilder
             if (strtolower(substr($sort, -3)) == 'asc') {
                 $mode = Query::SORT_ASC;
                 $sort = substr($sort, 0, -3);
-            } else if (strtolower(substr($sort, -3)) == 'desc') {
+            } else if (strtolower(substr($sort, -4)) == 'desc') {
                 $mode = Query::SORT_DESC;
                 $sort = substr($sort, 0, -4);
             } else {
@@ -107,8 +107,19 @@ class QueryBuilder extends AbstractQueryBuilder
      */
     protected function parseFilterQueries(Query $query, Request $request)
     {
-        foreach ($this->getParamAsArray($request, 'fq') as $filterQuery) {
-            $query->createFilterQuery($this->parseLocalParams($filterQuery, 'query'));
+        foreach ($this->getParamAsArray($request, 'fq') as $index => $filterQuery) {
+            $filterQueryParams = $this->parseLocalParams($filterQuery, 'query');
+
+            if (!array_key_exists('query', $filterQueryParams)) {
+                continue;
+            }
+
+            if (!array_key_exists('key', $filterQueryParams)) {
+                preg_match_all('/\b([\w]+):/', $filterQueryParams['query'], $matches);
+                $filterQueryParams['key'] = implode('-', $matches[1]);
+            }
+
+            $query->createFilterQuery($filterQueryParams);
         }
     }
 
@@ -118,6 +129,16 @@ class QueryBuilder extends AbstractQueryBuilder
      */
     protected function parseComponents(Query $query, Request $request)
     {
-        //TODO
+        /**
+         * @var ComponentQueryBuilderInterface[] $componentBuilders
+         */
+        $componentBuilders = array(
+            new Grouping(),
+            //@TODO implement more components
+        );
+
+        foreach ($componentBuilders as $componentBuilder) {
+            $componentBuilder->buildQuery($query, $request);
+        }
     }
 }

@@ -79,14 +79,17 @@ class Grouping implements ComponentRequestBuilderInterface, ComponentQueryBuilde
         return $request;
     }
 
-    public function buildQuery(Request $request, Query $query)
+    /**
+     * @param Query $query
+     * @param Request $request
+     */
+    public function buildQuery(Query $query, Request $request)
     {
         if ($request->getParam('group') !== 'true') {
             return;
         }
 
-        $component = new GroupingComponent();
+        $component = $query->getGrouping();
         $component->setFields($request->getParam('group.field'));
-        $query->setComponent('grouping', $component);
     }
 }

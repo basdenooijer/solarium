@@ -261,7 +261,7 @@ class FacetSetTest extends \PHPUnit_Framework_TestCase
         );
     }
 
-    public function testBuildeWithIntervalFacet()
+    public function testBuildWithIntervalFacet()
     {
         $facet = new FacetInterval(
             array(

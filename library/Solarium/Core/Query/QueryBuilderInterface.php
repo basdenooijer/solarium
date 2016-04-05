@@ -51,8 +51,7 @@ interface QueryBuilderInterface
      * Build query object from a request.
      *
      * @param QueryInterface $query
-     *
-     * @return Request
+     * @param Request $request
      */
-    public function build(Request $request);
+    public function build(QueryInterface $query, Request $request);
 }

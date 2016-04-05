@@ -28,7 +28,7 @@
  * those of the authors and should not be interpreted as representing official
  * policies, either expressed or implied, of the copyright holder.
  *
- * @copyright Copyright 2011 Bas de Nooijer <solarium@raspberry.nl>
+ * @copyright Copyright 2016 Bas de Nooijer <solarium@raspberry.nl>
  * @license http://github.com/basdenooijer/solarium/raw/master/COPYING
  *
  * @link http://www.solarium-project.org/
@@ -44,7 +44,7 @@ use Solarium\Core\Client\Request;
 /**
  * Class for building Solarium query objects from requests.
  */
-abstract class AbstractQueryBuilder implements QueryBuilderInterface
+abstract class AbstractQueryBuilder
 {
     /**
      * @param Request $request
@@ -60,7 +60,7 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
         }
 
         if (!is_array($param)) {
-            $param = array($param);
+            $param = explode(',', $param);
         }
 
         return $param;
@@ -74,27 +74,37 @@ abstract class AbstractQueryBuilder implements QueryBuilderInterface
      */
     protected function parseLocalParams($paramString, $mainValueKey, $mapping = array())
     {
-        /**
-         * TODO
-         * Parse $paramString into mainValue and localparams array,
-         * for example, the input string: {!type=dismax qf='myfield yourfield'}solr rocks
-         * should return:
-         * $mainValue = 'solr rocks';
-         * $localParams = array('type' => 'dismax', 'qf' => 'myfield yourfield');
-         */
-        $mainValue = '';
-        $localParams = array();
+        if (empty($paramString)) {
+            return array();
+        }
 
-        $result = array($mainValueKey => $mainValue);
+        preg_match('/(\{\!(.*)\})?(.*)/u', $paramString, $matches);
+        $result = array($mainValueKey => $matches[3]);
 
-        foreach ($localParams as $key => $value) {
-            if (array_key_exists($key, $mapping)) {
-                $result[$mapping[$key]] = $value;
-            } else {
-                $result[$key] = $value;
+        if (!empty($matches[2])) {
+            preg_match_all('/([\S]+)=([\S]+)/u', $matches[2], $paramMatches);
+
+            foreach ($paramMatches[1] as $index => $key) {
+                if (array_key_exists($key, $mapping)) {
+                    $key = $mapping[$key];
+                }
+
+                $result[$key] = $paramMatches[2][$index];
             }
+
         }
 
         return $result;
+    }
+
+    /**
+     * @param Request $request
+     * @param string $paramName
+     * @return bool
+     */
+    protected function getParameterAsBoolean(Request $request, $paramName)
+    {
+        $param = $request->getParam($paramName);
+        return (is_string($param) && strtolower($param) === 'true');
     }
 }

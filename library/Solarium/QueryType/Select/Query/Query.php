@@ -42,6 +42,9 @@ namespace Solarium\QueryType\Select\Query;
 
 use Solarium\Core\Client\Client;
 use Solarium\Core\Query\AbstractQuery as BaseQuery;
+use Solarium\Core\Query\ProvidesQueryBuilderInterface;
+use Solarium\Core\Query\QueryBuilderInterface;
+use Solarium\QueryType\Select\QueryBuilder\QueryBuilder;
 use Solarium\QueryType\Select\RequestBuilder\RequestBuilder;
 use Solarium\QueryType\Select\ResponseParser\ResponseParser;
 use Solarium\Exception\InvalidArgumentException;
@@ -55,7 +58,7 @@ use Solarium\QueryType\Select\Query\Component\AbstractComponent as AbstractCompo
  * lots of options and there are many Solarium subclasses for it.
  * See the Solr documentation and the relevant Solarium classes for more info.
  */
-class Query extends BaseQuery
+class Query extends BaseQuery implements ProvidesQueryBuilderInterface
 {
     /**
      * Solr sort mode descending.
@@ -1090,7 +1093,7 @@ class Query extends BaseQuery
                     break;
                 case 'tag':
                     if (!is_array($value)) {
-                        $value = array($value);
+                        $value = explode(',', $value);
                     }
                     $this->addTags($value);
                     break;
@@ -1108,5 +1111,15 @@ class Query extends BaseQuery
         foreach ($configs as $type => $config) {
             $this->getComponent($type, true, $config);
         }
+    }
+
+    /**
+     * Get the querybuilder
+     *
+     * @return QueryBuilder
+     */
+    public function getQueryBuilder()
+    {
+        return new QueryBuilder();
     }
 }
