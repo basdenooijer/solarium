@@ -45,7 +45,7 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Query\QueryBuilderInterface;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Select\Query\Query;
-use Solarium\QueryType\Select\RequestBuilder\Component\Grouping;
+use Solarium\QueryType\Select\QueryBuilder\Component\Grouping;
 
 /**
  * Build a select request.

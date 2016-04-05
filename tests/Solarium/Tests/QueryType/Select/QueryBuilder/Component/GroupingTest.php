@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright 2011 Bas de Nooijer. All rights reserved.
+ * Copyright 2016 Bram Gerritsen. All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -29,36 +29,21 @@
  * policies, either expressed or implied, of the copyright holder.
  */
 
-namespace Solarium\Tests\QueryType\Select\RequestBuilder\Component;
+namespace Solarium\Tests\QueryType\Select\QueryBuilder\Component;
 
-use Solarium\QueryType\Select\RequestBuilder\Component\Grouping as RequestBuilder;
+use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Select\QueryBuilder\Component\Grouping;
 use Solarium\QueryType\Select\Query\Component\Grouping as Component;
 use Solarium\Core\Client\Request;
 
 class GroupingTest extends \PHPUnit_Framework_TestCase
 {
-    public function testBuildComponent()
+    public function testBuildQuery()
     {
-        $builder = new RequestBuilder;
+        $builder = new Grouping();
+
         $request = new Request();
-
-        $component = new Component();
-        $component->setFields(array('fieldA', 'fieldB'));
-        $component->setQueries(array('cat:1', 'cat:2'));
-        $component->setLimit(12);
-        $component->setOffset(2);
-        $component->setSort('score desc');
-        $component->setMainResult(true);
-        $component->setNumberOfGroups(false);
-        $component->setCachePercentage(50);
-        $component->setTruncate(true);
-        $component->setFunction('log(foo)');
-        $component->setFacet(true);
-        $component->setFormat('grouped');
-
-        $request = $builder->buildComponent($component, $request);
-
-        $this->assertEquals(
+        $request->setParams(
             array(
                 'group' => 'true',
                 'group.field' => array('fieldA', 'fieldB'),
@@ -73,9 +58,26 @@ class GroupingTest extends \PHPUnit_Framework_TestCase
                 'group.func' => 'log(foo)',
                 'group.facet' => 'true',
                 'group.format' => 'grouped',
-            ),
-            $request->getParams()
+            )
         );
 
+        $query = new Query();
+        $builder->buildQuery($query, $request);
+
+        /** @var Component $component */
+        $component = $query->getComponent('grouping');
+
+        $this->assertEquals(array('fieldA', 'fieldB'), $component->getFields());
+        $this->assertEquals(array('cat:1', 'cat:2'), $component->getQueries());
+        $this->assertEquals(12, $component->getLimit());
+        $this->assertEquals(2, $component->getOffset());
+        $this->assertEquals('score desc', $component->getSort());
+        $this->assertTrue($component->getMainResult());
+        $this->assertFalse($component->getNumberOfGroups());
+        $this->assertEquals(50, $component->getCachePercentage());
+        $this->assertTrue($component->getTruncate());
+        $this->assertEquals('log(foo)', $component->getFunction());
+        $this->assertTrue($component->getFacet());
+        $this->assertEquals('grouped', $component->getFormat());
     }
 }
