@@ -46,7 +46,7 @@ use Solarium\QueryType\Select\Query\Component\FacetSet as FacetSetComponent;
 use Solarium\QueryType\Select\Query\Query;
 
 /**
- * Add select component FacetSet to the request.
+ * Add select component FacetSet to the query.
  */
 class FacetSet extends AbstractQueryBuilder implements ComponentQueryBuilderInterface
 {

@@ -41,12 +41,15 @@
 namespace Solarium\QueryType\Select\QueryBuilder\Component;
 
 use Solarium\Core\Client\Request;
+use Solarium\Core\Query\AbstractQueryBuilder;
+use Solarium\QueryType\Select\Query\Component\BoostQuery;
 use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Select\Query\Component\EdisMax as EdisMaxComponent;
 
 /**
  * Add select component Grouping to the query.
  */
-class Grouping implements ComponentQueryBuilderInterface
+class EdisMax extends AbstractQueryBuilder implements ComponentQueryBuilderInterface
 {
     /**
      * @param Query $query
@@ -55,22 +58,38 @@ class Grouping implements ComponentQueryBuilderInterface
      */
     public function buildQuery(Query $query, Request $request)
     {
-        if ($request->getParam('group') !== 'true') {
+        if ($request->getParam('defType') !== 'edismax') {
             return;
         }
 
-        $component = $query->getGrouping();
-        $component->setFields($request->getParam('group.field'));
-        $component->setQueries($request->getParam('group.query'));
-        $component->setLimit($request->getParam('group.limit'));
-        $component->setOffset($request->getParam('group.offset'));
-        $component->setSort($request->getParam('group.sort'));
-        $component->setMainResult($request->getParam('group.main') === 'true');
-        $component->setNumberOfGroups($request->getParam('group.ngroups') === 'true');
-        $component->setCachePercentage($request->getParam('group.cache.percent'));
-        $component->setTruncate($request->getParam('group.truncate') === 'true');
-        $component->setFunction($request->getParam('group.func'));
-        $component->setFacet($request->getParam('group.facet') === 'true');
-        $component->setFormat($request->getParam('group.format'));
+        $edisMax = $query->getEDisMax();
+
+        $edisMax->setQueryAlternative($request->getParam('q.alt'));
+        $edisMax->setQueryFields($request->getParam('qf'));
+        $edisMax->setMinimumMatch($request->getParam('mm'));
+        $edisMax->setPhraseFields($request->getParam('pf'));
+        $edisMax->setPhraseSlop($request->getParam('ps'));
+        $edisMax->setPhraseBigramFields($request->getParam('pf2'));
+        $edisMax->setPhraseBigramSlop($request->getParam('ps2'));
+        $edisMax->setPhraseTrigramFields($request->getParam('pf3'));
+        $edisMax->setPhraseTrigramSlop($request->getParam('ps3'));
+        $edisMax->setQueryPhraseSlop($request->getParam('qs'));
+        $edisMax->setTie($request->getParam('tie'));
+        $edisMax->setBoostFunctions($request->getParam('bf'));
+        $edisMax->setBoostFunctionsMult($request->getParam('boost'));
+        $edisMax->setUserFields($request->getParam('uf'));
+
+        $this->parseBoostQueries($edisMax, $request);
+    }
+
+    protected function parseBoostQueries(EdisMaxComponent $edisMax, Request $request)
+    {
+        $boostQueries = $this->getParamAsArray($request, 'bq');
+        foreach ($boostQueries as $i => $query) {
+            $bq = new BoostQuery();
+            $bq->setKey('bq_' . $i);
+            $bq->setQuery($query);
+            $edisMax->addBoostQuery($bq);
+        }
     }
 }

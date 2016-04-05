@@ -45,6 +45,8 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Query\QueryBuilderInterface;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Select\QueryBuilder\Component\EdisMax;
+use Solarium\QueryType\Select\QueryBuilder\Component\FacetSet;
 use Solarium\QueryType\Select\QueryBuilder\Component\Grouping;
 
 /**
@@ -133,6 +135,8 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
          * @var ComponentQueryBuilderInterface[] $componentBuilders
          */
         $componentBuilders = array(
+            new EdisMax(),
+            new FacetSet(),
             new Grouping(),
             //@TODO implement more components
         );
