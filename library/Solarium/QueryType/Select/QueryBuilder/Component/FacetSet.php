@@ -92,7 +92,7 @@ class FacetSet extends AbstractQueryBuilder implements ComponentQueryBuilderInte
             $field = $params['field'];
 
             if (!array_key_exists('key', $params) || empty($params['key'])) {
-                $params['key'] = 'field_' . $field;
+                $params['key'] = $field;
             }
 
             $prefix = sprintf('f.%s.facet.', $field);
