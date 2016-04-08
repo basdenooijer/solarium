@@ -244,7 +244,7 @@ class RequestBuilderTest extends \PHPUnit_Framework_TestCase
     public function testBuildAddXmlWithDateTime()
     {
         $command = new AddCommand;
-        $command->addDocument(new Document(array('id' => 1, 'datetime' => new \DateTime('2013-01-15 14:41:58'))));
+        $command->addDocument(new Document(array('id' => 1, 'datetime' => new \DateTime('2013-01-15 14:41:58', new \DateTimeZone('UTC')))));
 
         $this->assertEquals(
             '<add><doc><field name="id">1</field><field name="datetime">2013-01-15T14:41:58Z</field></doc></add>',
