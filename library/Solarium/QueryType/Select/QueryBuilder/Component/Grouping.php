@@ -41,12 +41,13 @@
 namespace Solarium\QueryType\Select\QueryBuilder\Component;
 
 use Solarium\Core\Client\Request;
+use Solarium\Core\Query\AbstractQueryBuilder;
 use Solarium\QueryType\Select\Query\Query;
 
 /**
  * Add select component Grouping to the query.
  */
-class Grouping implements ComponentQueryBuilderInterface
+class Grouping extends AbstractQueryBuilder implements ComponentQueryBuilderInterface
 {
     /**
      * @param Query $query
@@ -60,8 +61,8 @@ class Grouping implements ComponentQueryBuilderInterface
         }
 
         $component = $query->getGrouping();
-        $component->setFields($request->getParam('group.field'));
-        $component->setQueries($request->getParam('group.query'));
+        $component->setFields($this->getParamAsArray($request, 'group.field'));
+        $component->setQueries($this->getParamAsArray($request, 'group.query'));
         $component->setLimit($request->getParam('group.limit'));
         $component->setOffset($request->getParam('group.offset'));
         $component->setSort($request->getParam('group.sort'));
