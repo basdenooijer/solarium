@@ -110,6 +110,7 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
      */
     protected function parseFilterQueries(Query $query, Request $request)
     {
+        $keys = [];
         foreach ($this->getParamAsArray($request, 'fq') as $index => $filterQuery) {
             $filterQueryParams = $this->parseLocalParams($filterQuery, 'query');
 
@@ -119,7 +120,14 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
 
             if (!array_key_exists('key', $filterQueryParams)) {
                 preg_match_all('/\b([\w]+):/', $filterQueryParams['query'], $matches);
-                $filterQueryParams['key'] = implode('-', $matches[1]);
+                $key = implode('-', $matches[1]);
+                $filterQueryParams['key'] = $key;
+
+                $keys[] = $key;
+                $counts = array_count_values($keys);
+                if ($counts[$key] > 1) {
+                    $filterQueryParams['key'] .= $counts[$key];
+                }
             }
 
             $query->createFilterQuery($filterQueryParams);

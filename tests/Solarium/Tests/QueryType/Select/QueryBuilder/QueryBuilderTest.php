@@ -181,10 +181,15 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
     {
         $this->request->addParam('fq', 'locale:nl_NL');
         $this->request->addParam('fq', 'price:[10 TO 20] AND stock:true');
+        $this->request->addParam('fq', 'cat:A');
+        $this->request->addParam('fq', 'cat:B');
+        $this->request->addParam('fq', 'cat:C');
         $this->queryBuilder->build($this->query, $this->request);
         $filterQueries = $this->query->getFilterQueries();
 
-        $this->assertCount(2, $filterQueries);
+        $this->assertCount(5, $filterQueries);
+
+
 
         $filterQuery = current($filterQueries);
         $this->assertEquals('locale', $filterQuery->getKey());
@@ -193,6 +198,18 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
         $filterQuery = next($filterQueries);
         $this->assertEquals('price-stock', $filterQuery->getKey());
         $this->assertEquals('price:[10 TO 20] AND stock:true', $filterQuery->getQuery());
+
+        $filterQuery = next($filterQueries);
+        $this->assertEquals('cat', $filterQuery->getKey());
+        $this->assertEquals('cat:A', $filterQuery->getQuery());
+
+        $filterQuery = next($filterQueries);
+        $this->assertEquals('cat2', $filterQuery->getKey());
+        $this->assertEquals('cat:B', $filterQuery->getQuery());
+
+        $filterQuery = next($filterQueries);
+        $this->assertEquals('cat3', $filterQuery->getKey());
+        $this->assertEquals('cat:C', $filterQuery->getQuery());
     }
 
     public function testQueryWithEmptyFilter()
