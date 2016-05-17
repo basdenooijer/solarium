@@ -56,6 +56,16 @@ use Solarium\QueryType\Select\QueryBuilder\Component\Grouping;
 class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
 {
     /**
+     * Define which params are allowed to be mapped
+     */
+    const SIMPLE_PARAMS_WHITELIST = ['d'];
+
+    /**
+     * @var array
+     */
+    protected $parsedFilterQueryKeys = [];
+
+    /**
      * Build query object from a request.
      *
      * @param Query $query
@@ -77,6 +87,7 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
         $this->parseSortParam($query, $request);
         $this->parseFilterQueries($query, $request);
         $this->parseComponents($query, $request);
+        $this->parseSimpleParams($query, $request);
     }
 
     /**
@@ -119,18 +130,31 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
             }
 
             if (!array_key_exists('key', $filterQueryParams)) {
-                preg_match_all('/\b([\w]+):/', $filterQueryParams['query'], $matches);
-                $key = implode('-', $matches[1]);
-                $filterQueryParams['key'] = $key;
+                preg_match('/\b([\w]+):/', $filterQueryParams['query'], $matches);
+                $key = $matches[1];
 
                 $keys[] = $key;
                 $counts = array_count_values($keys);
                 if ($counts[$key] > 1) {
-                    $filterQueryParams['key'] .= $counts[$key];
+                    $key .= $counts[$key];
                 }
+                $filterQueryParams['key'] = $key;
             }
 
             $query->createFilterQuery($filterQueryParams);
+        }
+    }
+
+    /**
+     * @param Query $query
+     * @param Request $request
+     */
+    protected function parseSimpleParams(Query $query, Request $request)
+    {
+        foreach ($request->getParams() as $key => $value) {
+            if (in_array($key, self::SIMPLE_PARAMS_WHITELIST)) {
+                $query->addParam($key, $value);
+            }
         }
     }
 

@@ -174,7 +174,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $this->query->getFilterQueries());
         $filterQuery = current($this->query->getFilterQueries());
         $this->assertEquals('price:[10 TO 20] AND stock:true', $filterQuery->getQuery());
-        $this->assertEquals('price-stock', $filterQuery->getKey());
+        $this->assertEquals('price', $filterQuery->getKey());
     }
 
     public function testQueryWithMultipleFilters()
@@ -196,7 +196,7 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('locale:nl_NL', $filterQuery->getQuery());
 
         $filterQuery = next($filterQueries);
-        $this->assertEquals('price-stock', $filterQuery->getKey());
+        $this->assertEquals('price', $filterQuery->getKey());
         $this->assertEquals('price:[10 TO 20] AND stock:true', $filterQuery->getQuery());
 
         $filterQuery = next($filterQueries);
@@ -223,5 +223,17 @@ class QueryBuilderTest extends \PHPUnit_Framework_TestCase
     public function testQueryWithComponents()
     {
         $this->markTestIncomplete('not yet implemented');
+    }
+
+    public function testRemainingRequestParamsAreMapped()
+    {
+        $this->request->addParam('sort', 'price ASC');
+        $this->request->addParam('d', 50);
+        $this->request->addParam('foo', 'bar');
+
+        $this->queryBuilder->build($this->query, $this->request);
+
+        $this->assertCount(1, $this->query->getParams());
+        $this->assertEquals(['d' => 50], $this->query->getParams());
     }
 }
