@@ -61,11 +61,6 @@ class QueryBuilder extends AbstractQueryBuilder implements QueryBuilderInterface
     const SIMPLE_PARAMS_WHITELIST = ['d'];
 
     /**
-     * @var array
-     */
-    protected $parsedFilterQueryKeys = [];
-
-    /**
      * Build query object from a request.
      *
      * @param Query $query
